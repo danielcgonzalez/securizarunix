@@ -37,30 +37,7 @@ for user in `awk -F: '($3 < 500) {print $1 }' /etc/passwd`; do
 done
 
 
-# Definir permisos
-chown root:root /etc/anacrontab 
-chmod og-rwx /etc/anacrontab
-chown root:root /etc/crontab 
-chmod og-rwx /etc/crontab
-chown root:root /etc/cron.hourly
-chmod og-rwx /etc/cron.hourly
-chown root:root /etc/cron.daily 
-chmod og-rwx /etc/cron.daily
-chown root:root /etc/cron.weekly 
-chmod og-rwx /etc/cron.weekly
-chown root:root /etc/cron.monthly 
-chmod og-rwx /etc/cron.monthly
-chown root:root /etc/cron.d 
-chmod og-rwx /etc/cron.d
-rm -f /etc/at.deny 
-rm -f /etc/cron.deny 
-touch /etc/at.allow 
-chown root:root /etc/at.allow 
-chmod og-rwx /etc/at.allow
-chmod og-rwx /etc/cron.allow 
-chmod og-rwx /etc/at.allow 
-chown root:root /etc/cron.allow 
-chown root:root /etc/at.allow
+
 
 # Configurar sshd_config
 /usr/bin/sed -i '/^'"Protocol"'/d' /etc/ssh/sshd_config
