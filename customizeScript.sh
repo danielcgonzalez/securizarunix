@@ -226,7 +226,25 @@ if [ -f "$FILE" ]; then
 
     /usr/bin/sed -i '/^'"net.ipv4.tcp_syncookies"'/d' $FILE 
     echo "net.ipv4.tcp_syncookies=1" >> $FILE
+
+    /usr/bin/sed -i '/^'"net.ipv6.conf.all.accept_ra"'/d' $FILE 
+    echo "net.ipv6.conf.all.accept_ra=0" >> $FILE
+
+    /usr/bin/sed -i '/^'"net.ipv6.conf.default.accept_ra"'/d' $FILE 
+    echo "net.ipv6.conf.default.accept_ra=0" >> $FILE
+
+    /usr/bin/sed -i '/^'"net.ipv6.conf.all.accept_redirects"'/d' $FILE 
+    echo "net.ipv6.conf.all.accept_redirects=0" >> $FILE
+
+    /usr/bin/sed -i '/^'"net.ipv6.conf.default.accept_redirects"'/d' $FILE 
+    echo "net.ipv6.conf.default.accept_redirects=0" >> $FILE
+
 fi
+
+# desactivar ipv6
+echo "options ipv6 disable=1" > /etc/modprobe.d/ipv6.conf
+
+
 
 # quitar telnet
 apt remove telnet -y
