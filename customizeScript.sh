@@ -25,7 +25,7 @@ useradd -D -f 35
 # parámetros de configuración de las contraseñas
 sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 45/g' /etc/login.defs
 sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS 1/g' /etc/login.defs
-sed -i 's/^PASS_MIN_DAYS.*/PASS_WARN_AGE 7/g' /etc/login.defs
+sed -i 's/^PASS_WARN_AGE.*/PASS_WARN_AGE 7/g' /etc/login.defs
 
 for user in `awk -F: '($3 < 500) {print $1 }' /etc/passwd`; do 
  if [ $user != ""root"" ] && [ $user != ""sync"" ] && [ $user != ""shutdown"" ] && [ $user != ""halt"" ] 
@@ -146,7 +146,6 @@ fi
 
 # Bastionado
 FILE=/etc/modprobe.d/bastionado.conf 
-if [ -f "$FILE" ]; then
     echo "install cramfs /bin/true" > $FILE 
     echo "install freevxfs /bin/true" >> $FILE 
     echo "install jffs2 /bin/true" >> $FILE 
@@ -159,7 +158,7 @@ if [ -f "$FILE" ]; then
     echo "install sctp /bin/true" >> $FILE
     echo "install rds /bin/true" >> $FILE
     echo "install tipc /bin/true" >> $FILE
-fi
+
 # Arranque
 FILE=/etc/grub.conf
 if [ -f "$FILE" ]; then
@@ -229,4 +228,33 @@ if [ -f "$FILE" ]; then
     echo "net.ipv4.tcp_syncookies=1" >> $FILE
 fi
 
+# quitar telnet
+apt remove telnet -y
 
+# activar audit
+apt-get update -y
+apt-get install -y auditd
+
+systemctl enable auditd
+systemctl start auditd
+
+# Desactivar Core Dump
+echo "hard core 0" >> /etc/security/limits.conf 
+
+
+# Verificar y corregir permisos
+/bin/chmod 644 /etc/passwd
+/bin/chmod 000 /etc/shadow
+/bin/chmod 000 /etc/gshadow
+/bin/chmod 644 /etc/group
+/bin/chown root:root /etc/passwd
+/bin/chown root:root /etc/shadow
+/bin/chown root:root /etc/gshadow
+/bin/chown root:root /etc/group
+
+
+# activar historico contraseñas
+FILE=/etc/pam.d/common-password
+if [ -f "$FILE" ]; then
+    sed -i '/obscure sha512/s/$/ remember=10/' $FILE
+fi
