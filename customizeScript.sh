@@ -256,5 +256,5 @@ echo "hard core 0" >> /etc/security/limits.conf
 # activar historico contraseñas
 FILE=/etc/pam.d/common-password
 if [ -f "$FILE" ]; then
-    sed -i '/obscure sha512/s/$/ remember=10/' $FILE
+    sed -i '/obscure sha512/s/$/ remember=10 minlen=8/' $FILE
 fi
