@@ -144,7 +144,6 @@ if [ -f "$FILE" ]; then
     chmod 600 $FILE 
 fi
 
-# Bastionado
 
 
 # Arranque
@@ -241,4 +240,8 @@ echo "hard core 0" >> /etc/security/limits.conf
 /bin/chown root:root /etc/group
 
 
-
+# activar historico contraseñas
+FILE=/etc/pam.d/common-password
+if [ -f "$FILE" ]; then
+    sed -i '/obscure sha512/s/$/ remember=10 minlen=8/' $FILE
+fi
