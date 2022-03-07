@@ -94,6 +94,9 @@ chown root:root $FILE
 chmod og-rwx $FILE 
 fi
 
+# Desactivar servicio RSYNC
+systemctl disable rsyncd
+
 
 # Configurar sshd_config
 FILE=/etc/ssh/sshd_config
@@ -298,3 +301,7 @@ if [ -f "$FILE" ]; then
     /usr/bin/sed -i '/^'"max_log_file_action"'/d' $FILE 
     echo "max_log_file_action = keep_logs" >> $FILE 
 fi
+
+
+ 
+
