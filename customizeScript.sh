@@ -282,6 +282,17 @@ if [ -f "$FILE" ]; then
 fi
 
 
+#Microsoft Defender
+sudo apt-get install curl libplist-utils -y
+curl -o microsoft.list https://packages.microsoft.com/config/ubuntu/20.04/prod.list
+sudo mv ./microsoft.list /etc/apt/sources.list.d/microsoft-prod.list
+sudo apt-get install gpg && curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - 
+sudo apt-get install apt-transport-https -y && sudo apt-get update -y 
+sudo apt-get install mdatp -y
+mdatp config real-time-protection --value enabled
+mdatp config cloud-diagnostic --value enabled
+
+
 
 # auditoria
 FILE=/etc/audit/auditd.conf
