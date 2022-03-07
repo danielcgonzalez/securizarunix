@@ -247,64 +247,6 @@ fi
 # desactivar ipv6
 echo "options ipv6 disable=1" > /etc/modprobe.d/ipv6.conf
 
-# bloquear USB
-wget -P /etc/udev/rules.d/ https://raw.githubusercontent.com/danielcgonzalez/securizarunix/main/01-usblockdown.rules
-
-# quitar telnet
-apt remove telnet -y
-
-# activar audit
-apt-get update -y
-apt-get install -y auditd
-
-systemctl enable auditd
-systemctl start auditd
-
-# Desactivar Core Dump
-echo "hard core 0" >> /etc/security/limits.conf 
-
-
-# Verificar y corregir permisos
-/bin/chmod 644 /etc/passwd
-/bin/chmod 000 /etc/shadow
-/bin/chmod 000 /etc/gshadow
-/bin/chmod 644 /etc/group
-/bin/chown root:root /etc/passwd
-/bin/chown root:root /etc/shadow
-/bin/chown root:root /etc/gshadow
-/bin/chown root:root /etc/group
-
-
-# activar historico contraseñas
-FILE=/etc/pam.d/common-password
-if [ -f "$FILE" ]; then
-    sed -i '/obscure sha512/s/$/ remember=10 minlen=8/' $FILE
-fi
-
-
-
-
-
-
-# auditoria
-FILE=/etc/audit/auditd.conf
-if [ -f "$FILE" ]; then
-    /usr/bin/sed -i '/^'"max_log_file"'/d' $FILE 
-    echo "max_log_file = <MB>" >> $FILE 
-
-    /usr/bin/sed -i '/^'"space_left_action"'/d' $FILE 
-    echo "space_left_action = email" >> $FILE 
-
-    /usr/bin/sed -i '/^'"action_mail_acct"'/d' $FILE 
-    echo "action_mail_acct = root" >> $FILE 
-
-    /usr/bin/sed -i '/^'"admin_space_left_action"'/d' $FILE 
-    echo "admin_space_left_action = halt" >> $FILE 
-
-    /usr/bin/sed -i '/^'"max_log_file_action"'/d' $FILE 
-    echo "max_log_file_action = keep_logs" >> $FILE 
-fi
-
 
  
 
