@@ -242,6 +242,8 @@ if [ -f "$FILE" ]; then
     /usr/bin/sed -i '/^'"net.ipv6.conf.default.accept_redirects"'/d' $FILE 
     echo "net.ipv6.conf.default.accept_redirects=0" >> $FILE
 
+    echo "fs.suid_dumpable = 0" >> $FILE
+
 fi
 
 # desactivar ipv6
@@ -306,6 +308,7 @@ systemctl disable rsync.service
 
 # Desactivar paquete landscape
 sudo apt-get remove landscape-common  -y
+sudo apt-get autoremove -y
 
 FILE=/etc/security/pwquality.conf
 if [ -f "$FILE" ]; then
@@ -315,3 +318,9 @@ fi
 
 # borrar usuario "games"
 sudo userdel games
+
+
+sed -i 'SYS_UID_MIN        100' /etc/login.defs
+sed -i 'SYS_UID_MAX        999' /etc/login.defs
+
+
