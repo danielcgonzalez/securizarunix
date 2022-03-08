@@ -24,7 +24,7 @@ useradd -D -f 35
 
 # parámetros de configuración de las contraseñas
 sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 45/g' /etc/login.defs
-sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS 1/g' /etc/login.defs
+sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS 7/g' /etc/login.defs
 sed -i 's/^PASS_WARN_AGE.*/PASS_WARN_AGE 7/g' /etc/login.defs
 
 for user in `awk -F: '($3 < 500) {print $1 }' /etc/passwd`; do 
@@ -51,27 +51,27 @@ fi
 FILE=/etc/cron.hourly
 if [ -f "$FILE" ]; then
 chown root:root $FILE 
-chmod og-rwx $FILE
+chmod 700 $FILE
 fi
 FILE=/etc/cron.daily
 if [ -f "$FILE" ]; then
 chown root:root $FILE 
-chmod og-rwx $FILE
+chmod 700 $FILE
 fi
 FILE=/etc/cron.weekly
 if [ -f "$FILE" ]; then
 chown root:root $FILE 
-chmod og-rwx $FILE
+chmod 700 $FILE
 fi
 FILE=/etc/cron.monthly
 if [ -f "$FILE" ]; then
 chown root:root $FILE 
-chmod og-rwx $FILE
+chmod 700 $FILE
 fi
 FILE=/etc/cron.d
 if [ -f "$FILE" ]; then
 chown root:root $FILE 
-chmod og-rwx $FILE
+chmod 700 $FILE
 fi
 FILE=/etc/at.deny 
 if [ -f "$FILE" ]; then
@@ -159,6 +159,8 @@ FILE=/etc/modprobe.d/bastionado.conf
     echo "install sctp /bin/true" >> $FILE
     echo "install rds /bin/true" >> $FILE
     echo "install tipc /bin/true" >> $FILE
+    echo "install usb-storage /bin/true" >> $FILE
+     
 
 # Arranque
 FILE=/etc/grub.conf
@@ -259,18 +261,22 @@ systemctl enable auditd
 systemctl start auditd
 
 # Desactivar Core Dump
-echo "hard core 0" >> /etc/security/limits.conf 
+# hace falta añadirlo antes de la ultima linea # echo "hard core 0" >> /etc/security/limits.conf
+sed -ie ':t;N;$!bt; s/\(\n[^\n]*\)\{2\}$/\nhard core 0&/' /etc/security/limits.conf 
 
 
 # Verificar y corregir permisos
 /bin/chmod 644 /etc/passwd
+/bin/chmod 600 /etc/passwd-
 /bin/chmod 000 /etc/shadow
 /bin/chmod 000 /etc/gshadow
 /bin/chmod 644 /etc/group
+/bin/chmod 400 /boot/grub/grub.cfg
 /bin/chown root:root /etc/passwd
 /bin/chown root:root /etc/shadow
 /bin/chown root:root /etc/gshadow
 /bin/chown root:root /etc/group
+
 
 
 # activar historico contraseñas
@@ -279,29 +285,18 @@ if [ -f "$FILE" ]; then
     sed -i '/obscure sha512/s/$/ remember=10 minlen=8/' $FILE
 fi
 
+#contraseñas complejas
+touch /etc/security/pwquality.conf
 
+# Ensure lockout for failed password attempts is configured.
+echo "auth        required      pam_tally2.so deny=3 unlock_time=600 onerr=succeed file=/var/log/tallylog" >> /etc/pam.d/common-auth
 
+# Access to the root account via su should be restricted to the 'root' group
+echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su
 
+# The default umask for all users should be set to 077 in login.defs
+echo "UMASK 077" >> /etc/login.defs
 
-# auditoria
-FILE=/etc/audit/auditd.conf
-if [ -f "$FILE" ]; then
-    /usr/bin/sed -i '/^'"max_log_file"'/d' $FILE 
-    echo "max_log_file = <MB>" >> $FILE 
-
-    /usr/bin/sed -i '/^'"space_left_action"'/d' $FILE 
-    echo "space_left_action = email" >> $FILE 
-
-    /usr/bin/sed -i '/^'"action_mail_acct"'/d' $FILE 
-    echo "action_mail_acct = root" >> $FILE 
-
-    /usr/bin/sed -i '/^'"admin_space_left_action"'/d' $FILE 
-    echo "admin_space_left_action = halt" >> $FILE 
-
-    /usr/bin/sed -i '/^'"max_log_file_action"'/d' $FILE 
-    echo "max_log_file_action = keep_logs" >> $FILE 
-fi
-
-
- 
+# Instalar logrotate
+sudo apt-get install -y logrotate
 
