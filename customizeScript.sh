@@ -1,14 +1,14 @@
 #!/bin/bash -e
 
 # Desactivar las cuentas de sistema bloqueadas
-for user in `awk -F: '($3 < 500) {print $1 }' /etc/passwd`; do 
-    if [ $user != ""root"" ] 
-    then 
-        /usr/sbin/usermod -L $user 
-        if [ $user != ""sync"" ] && [ $user != ""shutdown"" ] && [ $user != ""halt"" ] 
-        then 
-            /usr/sbin/usermod -s /sbin/nologin $user 
-        fi 
+for user in `awk -F: '($3 < 500) {print $1 }' /etc/passwd`; do
+    if [ $user != ""root"" ]
+    then
+        /usr/sbin/usermod -L $user
+        if [ $user != ""sync"" ] && [ $user != ""shutdown"" ] && [ $user != ""halt"" ]
+        then
+            /usr/sbin/usermod -s /sbin/nologin $user
+        fi
     fi
 done
 
@@ -250,3 +250,67 @@ wget -P /etc/udev/rules.d/ https://raw.githubusercontent.com/danielcgonzalez/sec
 
 # quitar telnet
 apt-get remove telnet -y
+
+# activar audit
+apt-get update -y
+apt-get install -y auditd
+
+systemctl enable auditd
+systemctl start auditd
+
+# Desactivar Core Dump
+echo "hard core 0" >> /etc/security/limits.conf 
+
+
+# Verificar y corregir permisos
+/bin/chmod 644 /etc/passwd
+/bin/chmod 000 /etc/shadow
+/bin/chmod 000 /etc/gshadow
+/bin/chmod 644 /etc/group
+/bin/chown root:root /etc/passwd
+/bin/chown root:root /etc/shadow
+/bin/chown root:root /etc/gshadow
+/bin/chown root:root /etc/group
+
+
+# activar historico contraseñas
+FILE=/etc/pam.d/common-password
+if [ -f "$FILE" ]; then
+    sed -i '/obscure sha512/s/$/ remember=10 minlen=8/' $FILE
+fi
+
+
+#Microsoft Defender
+sudo apt-get install curl libplist-utils -y
+curl -o microsoft.list https://packages.microsoft.com/config/ubuntu/20.04/prod.list
+sudo mv ./microsoft.list /etc/apt/sources.list.d/microsoft-prod.list
+sudo apt-get install gpg && curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - 
+sudo apt-get install apt-transport-https -y && sudo apt-get update -y 
+sudo apt-get install mdatp -y
+mdatp config real-time-protection --value enabled
+mdatp config cloud-diagnostic --value enabled
+
+
+
+# auditoria
+FILE=/etc/audit/auditd.conf
+if [ -f "$FILE" ]; then
+    /usr/bin/sed -i '/^'"max_log_file"'/d' $FILE 
+    echo "max_log_file = <MB>" >> $FILE 
+
+    /usr/bin/sed -i '/^'"space_left_action"'/d' $FILE 
+    echo "space_left_action = email" >> $FILE 
+
+    /usr/bin/sed -i '/^'"action_mail_acct"'/d' $FILE 
+    echo "action_mail_acct = root" >> $FILE 
+
+    /usr/bin/sed -i '/^'"admin_space_left_action"'/d' $FILE 
+    echo "admin_space_left_action = halt" >> $FILE 
+
+    /usr/bin/sed -i '/^'"max_log_file_action"'/d' $FILE 
+    echo "max_log_file_action = keep_logs" >> $FILE 
+fi
+
+
+ 
+
