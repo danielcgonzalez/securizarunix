@@ -317,9 +317,4 @@ if [ -f "$FILE" ]; then
     echo "minclass = 4" >> $FILE
 fi
 
-# borrar usuario "games"
-sudo userdel games
 
-
-echo "SYS_UID_MIN        100" /etc/login.defs
-echo "SYS_UID_MAX        999" /etc/login.defs
