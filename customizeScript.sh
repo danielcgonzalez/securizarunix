@@ -286,7 +286,7 @@ sed -ie ':t;N;$!bt; s/\(\n[^\n]*\)\{2\}$/\n* hard core 0&/' /etc/security/limits
 # activar historico contraseñas
 FILE=/etc/pam.d/common-password
 if [ -f "$FILE" ]; then
-    sed -i '/obscure sha512/s/$/ remember=9 minlen=8/' $FILE
+    sed -i '/obscure sha512/s/$/ remember=50 minlen=8/' $FILE
 fi
 
 #contraseñas complejas
@@ -331,4 +331,3 @@ echo 'set superusers="root"' >> /etc/grub.d/40_custom
 # se genera asi: grub-mkpasswd-pbkdf2
 echo 'password_pbkdf2 root grub.pbkdf2.sha512.10000.325C6A44CD4D13931BC8D2C88E198BB4B7384DC04983E487E78FDD137B4451B3B6514375CD34B77D25CAA0902E287124EAF34008B91490662F418B70967EB4E2.9F63BD7C97933438F0215167182E435007A871871BE091BFEB15BC2A2F62F3F6CDDCA730D7B3AEFBAFD1F3839CADF09D8CECA2AF80C4C48BB9C3AB9D7D3994BE' >> /etc/grub.d/40_custom
 grub-mkconfig -o /boot/grub/grub.cfg
-
