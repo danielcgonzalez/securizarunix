@@ -262,7 +262,7 @@ systemctl start auditd
 
 # Desactivar Core Dump
 # hace falta añadirlo antes de la ultima linea # echo "hard core 0" >> /etc/security/limits.conf
-sed -ie ':t;N;$!bt; s/\(\n[^\n]*\)\{2\}$/\nhard core 0&/' /etc/security/limits.conf 
+sed -ie ':t;N;$!bt; s/\(\n[^\n]*\)\{2\}$/\n* hard core 0&/' /etc/security/limits.conf 
 
 
 # Verificar y corregir permisos
@@ -273,6 +273,7 @@ sed -ie ':t;N;$!bt; s/\(\n[^\n]*\)\{2\}$/\nhard core 0&/' /etc/security/limits.c
 /bin/chmod 644 /etc/group
 /bin/chmod 400 /boot/grub/grub.cfg
 /bin/chown root:root /etc/passwd
+/bin/chown root:root /etc/passwd-
 /bin/chown root:root /etc/shadow
 /bin/chown root:root /etc/gshadow
 /bin/chown root:root /etc/group
@@ -282,7 +283,7 @@ sed -ie ':t;N;$!bt; s/\(\n[^\n]*\)\{2\}$/\nhard core 0&/' /etc/security/limits.c
 # activar historico contraseñas
 FILE=/etc/pam.d/common-password
 if [ -f "$FILE" ]; then
-    sed -i '/obscure sha512/s/$/ remember=10 minlen=8/' $FILE
+    sed -i '/obscure sha512/s/$/ remember=9 minlen=8/' $FILE
 fi
 
 #contraseñas complejas
@@ -300,3 +301,17 @@ echo "UMASK 077" >> /etc/login.defs
 # Instalar logrotate
 sudo apt-get install -y logrotate
 
+# Desactivar servicio Rsync
+systemctl disable rsync.service
+
+# Desactivar paquete landscape
+sudo apt-get remove landscape-common  -y
+
+FILE=/etc/security/pwquality.conf
+if [ -f "$FILE" ]; then
+    echo "minlen = 14" >> $FILE
+    echo "minclass = 4" >> $FILE
+fi
+
+# borrar usuario "games"
+sudo userdel games
