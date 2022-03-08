@@ -308,7 +308,6 @@ systemctl disable rsync.service
 
 # Desactivar paquete landscape
 sudo apt-get remove landscape-common  -y
-sudo apt-get autoremove -y
 
 FILE=/etc/security/pwquality.conf
 if [ -f "$FILE" ]; then
