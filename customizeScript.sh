@@ -310,3 +310,16 @@ systemctl disable rsync.service
 # Desactivar paquete landscape
 sudo apt-get remove landscape-common  -y
 sudo apt-get autoremove -y
+
+FILE=/etc/security/pwquality.conf
+if [ -f "$FILE" ]; then
+    echo "minlen = 14" >> $FILE
+    echo "minclass = 4" >> $FILE
+fi
+
+# borrar usuario "games"
+sudo userdel games
+
+
+echo "SYS_UID_MIN        100" /etc/login.defs
+echo "SYS_UID_MAX        999" /etc/login.defs
