@@ -305,3 +305,8 @@ sudo apt-get install -y logrotate
 
 # Desactivar servicio Rsync
 systemctl disable rsync.service
+
+
+# Desactivar paquete landscape
+sudo apt-get remove landscape-common  -y
+sudo apt-get autoremove -y
