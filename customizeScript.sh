@@ -286,7 +286,7 @@ sed -ie ':t;N;$!bt; s/\(\n[^\n]*\)\{2\}$/\n* hard core 0&/' /etc/security/limits
 # activar historico contraseñas
 FILE=/etc/pam.d/common-password
 if [ -f "$FILE" ]; then
-    sed -i '/obscure sha512/s/$/ remember=50 minlen=8/' $FILE
+    sed -i '/obscure sha512/s/$/ remember=70 minlen=8/' $FILE
 fi
 
 #contraseñas complejas
@@ -324,4 +324,6 @@ sudo userdel games
 
 echo "SYS_UID_MIN        100" >> /etc/login.defs
 echo "SYS_UID_MAX        999" >> /etc/login.defs
+
+
 
