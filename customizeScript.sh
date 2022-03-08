@@ -49,27 +49,27 @@ chown root:root $FILE
 chmod og-rwx $FILE
 fi
 FILE=/etc/cron.hourly
-if [ -f "$FILE" ]; then
+if [ -d "$FILE" ]; then
 chown root:root $FILE 
 chmod 700 $FILE
 fi
 FILE=/etc/cron.daily
-if [ -f "$FILE" ]; then
+if [ -d "$FILE" ]; then
 chown root:root $FILE 
 chmod 700 $FILE
 fi
 FILE=/etc/cron.weekly
-if [ -f "$FILE" ]; then
+if [ -d "$FILE" ]; then
 chown root:root $FILE 
 chmod 700 $FILE
 fi
 FILE=/etc/cron.monthly
-if [ -f "$FILE" ]; then
+if [ -d "$FILE" ]; then
 chown root:root $FILE 
 chmod 700 $FILE
 fi
 FILE=/etc/cron.d
-if [ -f "$FILE" ]; then
+if [ -d "$FILE" ]; then
 chown root:root $FILE 
 chmod 700 $FILE
 fi
