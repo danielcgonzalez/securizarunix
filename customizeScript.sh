@@ -250,35 +250,3 @@ wget -P /etc/udev/rules.d/ https://raw.githubusercontent.com/danielcgonzalez/sec
 
 # quitar telnet
 apt-get remove telnet -y
-
-# activar audit
-apt-get update -y
-apt-get install -y auditd
-
-systemctl enable auditd
-systemctl start auditd
-
-# Desactivar Core Dump
-echo "hard core 0" >> /etc/security/limits.conf 
-
-
-# Verificar y corregir permisos
-/bin/chmod 644 /etc/passwd
-/bin/chmod 000 /etc/shadow
-/bin/chmod 000 /etc/gshadow
-/bin/chmod 644 /etc/group
-/bin/chown root:root /etc/passwd
-/bin/chown root:root /etc/shadow
-/bin/chown root:root /etc/gshadow
-/bin/chown root:root /etc/group
-
-
-# activar historico contraseñas
-FILE=/etc/pam.d/common-password
-if [ -f "$FILE" ]; then
-    sed -i '/obscure sha512/s/$/ remember=10 minlen=8/' $FILE
-fi
-
-
-
-
