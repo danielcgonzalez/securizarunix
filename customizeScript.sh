@@ -326,4 +326,4 @@ echo "SYS_UID_MIN        100" >> /etc/login.defs
 echo "SYS_UID_MAX        999" >> /etc/login.defs
 
 
-
+sudo sed  -i 's/echo 2/echo 0/g' /etc/init.d/apport
